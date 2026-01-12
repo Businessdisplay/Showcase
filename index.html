@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #088b88;
+            --text-color: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --shadow-deep: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0b;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        #video-bg {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%; min-height: 100%;
+            z-index: -2;
+            object-fit: cover;
+            filter: brightness(0.3);
+        }
+
+        .intro-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 40px;
+            padding: 50px;
+            box-shadow: var(--shadow-deep);
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            gap: 40px;
+            border: 1px solid var(--glass-border);
+            z-index: 1;
+            transition: filter 0.4s ease;
+            min-height: 700px;
+        }
+
+        .intro-card.blurred { filter: blur(10px); pointer-events: none; }
+
+        .logo-and-description { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .title { font-family: 'Kanit', sans-serif; font-size: 3.5em; color: var(--primary-color); margin: 0; line-height: 1; }
+        
+        .description { font-size: 1.1em; color: rgba(255, 255, 255, 0.7); margin: 15px 0 25px 0; line-height: 1.6; min-height: 70px; }
+
+        .action-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .btn { padding: 14px 24px; border-radius: 14px; font-weight: 600; text-align: center; text-decoration: none; transition: 0.3s; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 0.9em; min-height: 54px; }
+        
+        .primary-button { background-color: var(--primary-color); color: white; }
+        .secondary-button { background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .toggle-button { background: rgba(8, 139, 136, 0.15); color: var(--primary-color); border: 1px solid var(--primary-color); }
+        .lang-button { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 5px; font-size: 0.8em; padding: 8px; min-height: auto; width: fit-content; }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+        .qr-section { display: flex; gap: 15px; margin-top: 25px; }
+        .qr-container { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        #qrcode, #qrcode-mail { padding: 6px; background: white; border-radius: 10px; }
+        .qr-label { font-size: 0.65em; color: var(--primary-color); font-weight: 700; letter-spacing: 1px; text-align: center; min-height: 30px; }
+
+        .info-section { flex: 1.8; display: flex; flex-direction: column; gap: 20px; }
+        .item-card { background: rgba(255, 255, 255, 0.03); padding: 25px; border-radius: 24px; border: 1px solid var(--glass-border); }
+        .item-card h2 { font-size: 0.9em; color: var(--primary-color); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(8, 139, 136, 0.3); padding-bottom: 8px; }
+        
+        .benefit-list { list-style: none; padding: 0; margin: 0; }
+        .benefit-list li { margin-bottom: 15px; color: var(--text-color); font-size: 0.88em; line-height: 1.4; display: grid; grid-template-columns: 30px 1fr; align-items: start; }
+        .benefit-list li i { color: var(--primary-color); margin-top: 3px; }
+        .benefit-list li strong { color: #fff; display: block; margin-bottom: 2px; }
+
+        .signature-card { background: rgba(255, 255, 255, 0.04); padding: 25px; border-radius: 24px; border: 1px solid var(--glass-border); margin-top: auto; }
+        .signature-text { font-size: 0.75em; line-height: 1.6; color: rgba(255, 255, 255, 0.6); margin: 0; text-align: justify; }
+
+        .demo-footer { margin-top: 20px; font-size: 0.7em; color: rgba(255,255,255,0.4); letter-spacing: 1px; z-index: 1; text-align: center; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+            backdrop-filter: blur(15px);
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        
+        .case-study-modal {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border); 
+            border-radius: 40px; 
+            padding: 40px;
+            max-width: 650px; 
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(0.9); 
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .case-study-modal { transform: scale(1); }
+        .nda-badge { position: absolute; top: 20px; right: 20px; font-size: 0.6em; background: rgba(255,0,0,0.2); color: #ff5f5f; padding: 4px 8px; border-radius: 4px; border: 1px solid #ff5f5f; font-weight: bold; }
+
+        @media (max-width: 950px) { 
+            .intro-card { flex-direction: column; padding: 30px; height: auto; min-height: unset; } 
+            .info-section { flex: 1; }
+            .qr-section { flex-direction: row; }
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop playsinline id="video-bg">
+        <source src="video.mp4" type="video/mp4">
+    </video>
+    
+    <div class="intro-card" id="main-card">
+        <div class="logo-and-description">
+            <div>
+                <button id="lang-toggle" class="btn lang-button"><i class="fas fa-globe"></i> ES | EN</button>
+                <h1 class="title">JHONATAN STIDK NIETO BUITRAGO</h1>
+                <p class="description" id="txt-header-desc">
+                    <strong>Systems Architect & Strategic Operations</strong><br>
+                    High-Performance Infrastructure & Technical Liaison.
+                </p>
+                <div class="action-buttons">
+                    <a href="Jhonatan_Stidk_Nieto_Buitrago_CV.pdf" class="btn primary-button" id="btn-cv"><i class="fas fa-file-alt"></i> VIEW EXECUTIVE CV</a>
+                    <a href="https://Introduction-Showcase.zapier.app" class="btn secondary-button" id="btn-ai"><i class="fas fa-brain"></i> CONSULT AI AGENT</a>
+                    <button id="open-study" class="btn toggle-button"><i class="fas fa-project-diagram"></i> VIEW STRATEGIC CASE STUDY</button>
+                </div>
+            </div>
+            <div class="qr-section">
+                <div class="qr-container">
+                    <span class="qr-label" id="txt-qr-tel">SCAN TO CALL DIRECTLY</span>
+                    <div id="qrcode"></div>
+                </div>
+                <div class="qr-container">
+                    <span class="qr-label" id="txt-qr-mail">SCAN TO EMAIL DIRECTLY</span>
+                    <div id="qrcode-mail"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="item-card">
+                <h2 id="txt-card1-h">Operational Integrity & Enterprise Architecture</h2>
+                <ul class="benefit-list" id="txt-card1-list">
+                    <li><i class="fas fa-microchip"></i><span><strong>Strategic AI Infrastructure Design:</strong> Engineering robust structural logic and integration bridges to synchronize backend data architectures with AI processing units, facilitating automated decision-making and operational scalability.</span></li>
+                    <li><i class="fas fa-shield"></i><span><strong>Security-Centric Information Governance:</strong> Establishing 100% data sovereignty through rigorous security protocols, ensuring the absolute integrity and confidentiality of sensitive proprietary assets and institutional data.</span></li>
+                    <li><i class="fas fa-bolt"></i><span><strong>High-Velocity Performance Optimization:</strong> Systematic deployment of rapid-response diagnostics and software re-engineering to eliminate bottlenecks, ensuring peak system output during critical performance cycles.</span></li>
+                </ul>
+            </div>
+            
+            <div class="item-card">
+                <h2 id="txt-card2-h">Global Strategy & Jurisdictional Reach</h2>
+                <ul class="benefit-list" id="txt-card2-list">
+                    <li><i class="fas fa-chart-line"></i><span><strong>Mass-Scale Digital Influence & Media Acquisition:</strong> Developing high-performance digital ecosystems and didactic design frameworks that secure verifiable reaches of 2M+ impressions, driving global engagement and narrative control.</span></li>
+                    <li><i class="fas fa-language"></i><span><strong>Linguistic Capability:</strong> Providing seamless professional communication and strategic liaison services across the Americas, Europe, and Oceania, utilizing native-level fluency in English, Spanish, and Italian.</span></li>
+                    <li><i class="fas fa-code"></i><span><strong>Languages & Frameworks:</strong> Swift (Xcode/iOS Development), JavaScript, HTML5, CSS3, Vue.js, React, and Web Frontend Architecture.</span></li>
+                </ul>
+            </div>
+
+            <div class="signature-card">
+                <p class="signature-text" id="txt-sig">
+                    This Demonstration is engineered as a <strong>High-Performance Minimum Viable Product (MVP)</strong>, utilizing a streamlined stack of HTML5, CSS3, and JavaScript for zero-latency delivery. The site features a <strong>Bespoke Inquiry Automation Layer</strong> powered by Zapier, connecting frontend engagement to an internal communications stack.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-footer" id="txt-footer">2026 | JHONATAN STIDK NIETO BUITRAGO | FOR DEMONSTRATION PURPOSES ONLY</div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="case-study-modal">
+            <div class="nda-badge">NDA PROTECTED</div>
+            <h2 id="txt-modal-h">Strategic Case Study</h2>
+            <h3 id="txt-modal-sub">Project: High-Velocity Media Ecosystem & Social Behavioral Engineering</h3>
+            <div id="txt-modal-body">
+                <p><strong>Problem:</strong> Catalyzing social and political policy shifts across international regions by capturing mass-audience attention.</p>
+                <p><strong>Solution:</strong> Engineered a "High-Pressure" digital ecosystem mirroring boiling-point social cycles.</p>
+                <p><strong>Result:</strong> Successfully forced domestic policy discussions with 2M+ impressions per release.</p>
+            </div>
+            <button class="btn primary-button" id="close-study" style="width: 100%; margin-top: 20px;">UNDERSTOOD</button>
+        </div>
+    </div>
+
+    <script>
+        new QRCode(document.getElementById("qrcode"), { text: "tel:+573208248064", width: 85, height: 85 });
+        new QRCode(document.getElementById("qrcode-mail"), { text: "Businessare@proton.me", width: 85, height: 85 });
+
+        const openBtn = document.getElementById('open-study');
+        const closeBtn = document.getElementById('close-study');
+        const overlay = document.getElementById('modal-overlay');
+        const mainCard = document.getElementById('main-card');
+        const langToggle = document.getElementById('lang-toggle');
+
+        let currentLang = 'en';
+
+        const content = {
+            en: {
+                headerDesc: '<strong>Systems Architect & Strategic Operations</strong><br>High-Performance Infrastructure & Technical Liaison.',
+                btnCv: '<i class="fas fa-file-alt"></i> VIEW EXECUTIVE CV',
+                btnAi: '<i class="fas fa-brain"></i> CONSULT AI AGENT',
+                btnStudy: '<i class="fas fa-project-diagram"></i> VIEW STRATEGIC CASE STUDY',
+                qrTel: 'SCAN TO CALL DIRECTLY',
+                qrMail: 'SCAN TO EMAIL DIRECTLY',
+                card1H: 'Operational Integrity & Enterprise Architecture',
+                card1L: `
+                    <li><i class="fas fa-microchip"></i><span><strong>Strategic AI Infrastructure Design:</strong> Engineering robust structural logic and integration bridges to synchronize backend data architectures with AI processing units, facilitating automated decision-making and operational scalability.</span></li>
+                    <li><i class="fas fa-shield"></i><span><strong>Security-Centric Information Governance:</strong> Establishing 100% data sovereignty through rigorous security protocols, ensuring the absolute integrity and confidentiality of sensitive proprietary assets and institutional data.</span></li>
+                    <li><i class="fas fa-bolt"></i><span><strong>High-Velocity Performance Optimization:</strong> Systematic deployment of rapid-response diagnostics and software re-engineering to eliminate bottlenecks, ensuring peak system output during critical performance cycles.</span></li>`,
+                card2H: 'Global Strategy & Jurisdictional Reach',
+                card2L: `
+                    <li><i class="fas fa-chart-line"></i><span><strong>Mass-Scale Digital Influence & Media Acquisition:</strong> Developing high-performance digital ecosystems and didactic design frameworks that secure verifiable reaches of 2M+ impressions, driving global engagement and narrative control.</span></li>
+                    <li><i class="fas fa-language"></i><span><strong>Linguistic Capability:</strong> Providing seamless professional communication and strategic liaison services across the Americas, Europe, and Oceania, utilizing native-level fluency in English, Spanish, and Italian.</span></li>
+                    <li><i class="fas fa-code"></i><span><strong>Languages & Frameworks:</strong> Swift (Xcode/iOS Development), JavaScript, HTML5, CSS3, Vue.js, React, and Web Frontend Architecture.</span></li>`,
+                sig: 'This Demonstration is engineered as a <strong>High-Performance Minimum Viable Product (MVP)</strong>, utilizing a streamlined stack of HTML5, CSS3, and JavaScript for zero-latency delivery. The site features a <strong>Bespoke Inquiry Automation Layer</strong> powered by Zapier, connecting frontend engagement to an internal communications stack.',
+                modalH: 'Strategic Case Study',
+                modalSub: 'Project: High-Velocity Media Ecosystem & Social Behavioral Engineering',
+                modalBody: '<p><strong>Problem:</strong> Catalyzing social and political policy shifts across international regions by capturing mass-audience attention.</p><p><strong>Solution:</strong> Engineered a "High-Pressure" digital ecosystem mirroring boiling-point social cycles.</p><p><strong>Result:</strong> Successfully forced domestic policy discussions with 2M+ impressions per release.</p>',
+                modalClose: 'UNDERSTOOD',
+                footer: '2026 | JHONATAN STIDK NIETO BUITRAGO | FOR DEMONSTRATION PURPOSES ONLY'
+            },
+            es: {
+                headerDesc: '<strong>Arquitecto de Sistemas y Operaciones Estratégicas</strong><br>Infraestructura de Alto Rendimiento y Enlace Técnico.',
+                btnCv: '<i class="fas fa-file-alt"></i> VER CV EJECUTIVO',
+                btnAi: '<i class="fas fa-brain"></i> CONSULTAR AGENTE IA',
+                btnStudy: '<i class="fas fa-project-diagram"></i> VER CASO DE ESTUDIO ESTRATÉGICO',
+                qrTel: 'ESCANEE PARA LLAMAR DIRECTO',
+                qrMail: 'ESCANEE PARA EMAIL DIRECTO',
+                card1H: 'Integridad Operativa y Arquitectura Empresarial',
+                card1L: `
+                    <li><i class="fas fa-microchip"></i><span><strong>Diseño Estratégico de Infraestructura IA:</strong> Ingeniería de lógica estructural y puentes de integración para sincronizar arquitecturas de datos con unidades de procesamiento de IA, facilitando la toma de decisiones automatizada.</span></li>
+                    <li><i class="fas fa-shield"></i><span><strong>Gobernanza de Información Centrada en Seguridad:</strong> Establecimiento de soberanía de datos al 100% mediante protocolos rigurosos, garantizando la integridad de activos institucionales sensibles.</span></li>
+                    <li><i class="fas fa-bolt"></i><span><strong>Optimización de Rendimiento de Alta Velocidad:</strong> Despliegue sistemático de diagnósticos de respuesta rápida y reingeniería de software para eliminar cuellos de botella.</span></li>`,
+                card2H: 'Estrategia Global y Alcance Jurisdiccional',
+                card2L: `
+                    <li><i class="fas fa-chart-line"></i><span><strong>Influencia Digital y Adquisición de Medios:</strong> Desarrollo de ecosistemas digitales y marcos de diseño didáctico que aseguran alcances de más de 2M de impresiones, impulsando el control de la narrativa.</span></li>
+                    <li><i class="fas fa-language"></i><span><strong>Capacidad Lingüística:</strong> Servicios de enlace estratégico en las Américas, Europa y Oceanía, con fluidez nativa en inglés, español e italiano.</span></li>
+                    <li><i class="fas fa-code"></i><span><strong>Lenguajes y Frameworks:</strong> Swift (Xcode/iOS), JavaScript, HTML5, CSS3, Vue.js, React y Arquitectura Frontend Web.</span></li>`,
+                sig: 'Esta demostración está diseñada como un <strong>Producto Mínimo Viable (MVP)</strong> de alto rendimiento. Cuenta con una <strong>Capa de Automatización</strong> impulsada por Zapier para conectar la interacción con un stack de comunicaciones internas.',
+                modalH: 'Caso de Estudio Estratégico',
+                modalSub: 'Proyecto: Ecosistema de Medios de Alta Velocidad e Ingeniería de Comportamiento Social',
+                modalBody: '<p><strong>Problema:</strong> Catalizar cambios en políticas sociales internacionales capturando la atención masiva.</p><p><strong>Solución:</strong> Ecosistema digital de "Alta Presión".</p><p><strong>Resultados:</strong> Más de 2M de impresiones por lanzamiento.</p>',
+                modalClose: 'ENTENDIDO',
+                footer: '2026 | JHONATAN STIDK NIETO BUITRAGO | SOLO PARA FINES DE DEMOSTRACIÓN'
+            }
+        };
+
+        langToggle.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'es' : 'en';
+            const data = content[currentLang];
+            
+            document.getElementById('txt-header-desc').innerHTML = data.headerDesc;
+            document.getElementById('btn-cv').innerHTML = data.btnCv;
+            document.getElementById('btn-ai').innerHTML = data.btnAi;
+            openBtn.innerHTML = data.btnStudy;
+            document.getElementById('txt-qr-tel').innerText = data.qrTel;
+            document.getElementById('txt-qr-mail').innerText = data.qrMail;
+            document.getElementById('txt-card1-h').innerText = data.card1H;
+            document.getElementById('txt-card1-list').innerHTML = data.card1L;
+            document.getElementById('txt-card2-h').innerText = data.card2H;
+            document.getElementById('txt-card2-list').innerHTML = data.card2L;
+            document.getElementById('txt-sig').innerHTML = data.sig;
+            document.getElementById('txt-modal-h').innerText = data.modalH;
+            document.getElementById('txt-modal-sub').innerText = data.modalSub;
+            document.getElementById('txt-modal-body').innerHTML = data.modalBody;
+            document.getElementById('close-study').innerText = data.modalClose;
+            document.getElementById('txt-footer').innerText = data.footer;
+        });
+
+        openBtn.addEventListener('click', () => { overlay.classList.add('active'); mainCard.classList.add('blurred'); });
+        closeBtn.addEventListener('click', () => { overlay.classList.remove('active'); mainCard.classList.remove('blurred'); });
+    </script>
+</body>
+</html>
